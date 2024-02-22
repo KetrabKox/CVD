@@ -17,8 +17,9 @@ body {
   color: var(--main-color-text);
   background: var(--main-theme-color);
   line-height: 1.6;
-  font-family: "Roboto", sans-serif;
-  font-size: 15px;
+  font-family: "Roboto Slab";
+  letter-spacing: 1.4px;
+  font-size: 16.5px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
