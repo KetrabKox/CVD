@@ -50,7 +50,6 @@
 </template>
   
   <style scoped>
-@import "../assets/base.css";
 .wrapper,
 .wrapper::before {
   height: 40rem;
