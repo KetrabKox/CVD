@@ -39,13 +39,17 @@
           </div>
           <button type="submit" class="btn btn-primary">Register</button>
         </form>
+        <div class="wrapper-login d-flex align-items-center flex-column">
+          <router-link to="/login" class="text-decoration-none">
+            <a class="login text-center mt-2">Log in</a>
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
 </template>
   
   <style scoped>
-@import "../assets/base.css";
 .wrapper,
 .wrapper::before {
   height: 40rem;
@@ -91,21 +95,21 @@ button:active:focus {
   background-color: var(--secondary-color-text);
 }
 
-.wrapper-sign {
-  margin: 8rem auto;
+.wrapper-login {
+  margin: 2.5rem auto;
 }
 .password-recovery,
-.sign-up {
+.login {
   color: var(--secondary-color-text);
   transition: 0.3s;
 }
 .password-recovery:hover,
-.sign-up:hover {
+.login:hover {
   color: var(--main-color-text);
   transition: 0.3s;
 }
-.sign-up {
+.login {
   font-weight: 800;
-  font-size: 2rem;
+  font-size: 1.7rem;
 }
 </style>
