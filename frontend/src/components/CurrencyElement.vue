@@ -35,10 +35,16 @@ button {
   color: #fff;
   border: none;
   box-shadow: 0 0.5rem var(--main-theme-color);
+  transition: 0.3s;
 }
 button:active {
   box-shadow: 0 0.3rem var(--main-theme-color);
   transform: translateY(4px);
+}
+button:focus {
+  transform: translateY(4px);
+  box-shadow: 0 0.3rem var(--main-theme-color);
+  background-color: var(--main-color-text);
 }
 .currency.value {
   border-top-left-radius: 15px;
