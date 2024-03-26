@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import { Line } from "vue-chartjs";
 import HeaderDashboard from "../components/HeaderDashboard.vue";
 import { useSendNameStore } from "../stores/sendName";
@@ -20,7 +20,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { any } from "0g";
 
 ChartJS.register(
   CategoryScale,
@@ -44,36 +43,14 @@ export default defineComponent({
   },
 
   async mounted() {
-    // Pobranie danych z NBP
-    var today = new Date();
-    var last_week = new Date();
-    last_week.setDate(last_week.getDate() - 7);
-
-    // Zmiana daty z weekendów na dni powszednie
-    if (today.getDay() == 6) {
-      today.setDate(today.getDate() - 1);
-      last_week.setDate(last_week.getDate() - 1);
-    } else if (today.getDay() == 0) {
-      today.setDate(today.getDate() - 2);
-      last_week.setDate(last_week.getDate() - 2);
-    } else if (today.getDay() == 1) {
-      last_week.setDate(last_week.getDate() - 3);
-    }
-
-    // Formatowanie daty
-    var d_e = String(today.getDate()).padStart(2, "0");
-    var m_e = String(today.getMonth() + 1).padStart(2, "0");
-    var y_e = today.getFullYear();
-
-    var d_s = String(last_week.getDate()).padStart(2, "0");
-    var m_s = String(last_week.getMonth() + 1).padStart(2, "0");
-    var y_s = last_week.getFullYear();
-
-    this.updateChartData(y_s, m_s, d_s, y_e, m_e, d_e); // Wywołujemy metodę updateChartData
+    // Pobranie danych z NBP API
+    this.updateChartData(); // Wywołujemy metodę updateChartData
   },
 
   data() {
     return {
+      nameStore: useSendNameStore(),
+      currentName: "",
       currencyWeek: [],
       chartData: {
         labels: [] as any,
@@ -113,19 +90,46 @@ export default defineComponent({
           legend: {
             display: false,
           },
+          title: {
+            display: true,
+            text: `${this.currentName}/PLN`,
+            color: "#ffffff",
+            font: {
+              size: 20,
+            },
+          },
         },
       },
     };
   },
   methods: {
-    async updateChartData(
-      y_s: any,
-      m_s: any,
-      d_s: any,
-      y_e: any,
-      m_e: any,
-      d_e: any
-    ) {
+    async updateChartData() {
+      var today = new Date();
+      var last_week = new Date();
+
+      // Zmiana daty o wskazaną wartość
+      last_week.setDate(last_week.getDate() - 7);
+
+      // Zmiana daty z weekendów na dni powszednie
+      if (today.getDay() == 6) {
+        today.setDate(today.getDate() - 1);
+        last_week.setDate(last_week.getDate() - 1);
+      } else if (today.getDay() == 0) {
+        today.setDate(today.getDate() - 2);
+        last_week.setDate(last_week.getDate() - 2);
+      } else if (today.getDay() == 1) {
+        last_week.setDate(last_week.getDate() - 3);
+      }
+
+      // Formatowanie daty
+      var d_e = String(today.getDate()).padStart(2, "0");
+      var m_e = String(today.getMonth() + 1).padStart(2, "0");
+      var y_e = today.getFullYear();
+
+      var d_s = String(last_week.getDate()).padStart(2, "0");
+      var m_s = String(last_week.getMonth() + 1).padStart(2, "0");
+      var y_s = last_week.getFullYear();
+
       let response_week = await axios.get(
         `http://api.nbp.pl/api/exchangerates/tables/A/${
           y_s + "-" + m_s + "-" + d_s
@@ -139,6 +143,7 @@ export default defineComponent({
           );
           if (found.length > 0) {
             return {
+              name: found[0].code,
               date: item.effectiveDate,
               mid: found[0].mid,
             };
@@ -157,6 +162,19 @@ export default defineComponent({
           },
         ],
       };
+      if (this.currencyWeek.length > 0) {
+        this.chartOptions.plugins.title.text =
+          (this.currencyWeek[0] as any).name + "/PLN";
+      }
+    },
+  },
+  // Obserwujemy zmiany w nameStore i aktualizujemy wykres
+  watch: {
+    nameStore: {
+      handler() {
+        this.updateChartData();
+      },
+      deep: true,
     },
   },
 });
