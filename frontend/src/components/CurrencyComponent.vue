@@ -49,6 +49,8 @@ export default defineComponent({
     } else if (today.getDay() == 0) {
       today.setDate(today.getDate() - 2);
       yesterday.setDate(yesterday.getDate() - 2);
+    } else if (today.getDay() == 1) {
+      yesterday.setDate(yesterday.getDate() - 3);
     }
 
     // Formatowanie daty
@@ -71,7 +73,7 @@ export default defineComponent({
         yyyy2 + "-" + mm2 + "-" + dd2
       }/`
     );
-    // // Obliczanie różnicy dla kazdej waluty
+    // Obliczanie różnicy dla kazdej waluty
     for (let i = 0; i < response_today.data[0].rates.length; i++) {
       let currency = response_today.data[0].rates[i].code;
       let value_today = response_today.data[0].rates[i].mid.toFixed(3);

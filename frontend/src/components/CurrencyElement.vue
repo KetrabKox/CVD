@@ -1,5 +1,8 @@
 <template>
-  <button class="wrap rounded-4 mt-3 d-flex flex-row p-0">
+  <button
+    class="wrap rounded-4 mt-3 d-flex flex-row p-0"
+    @click="sendCurrencyName"
+  >
     <div class="h-100 rounded-start-4">
       <div class="currency value h-50 w-100 ps-2">{{ currencyValue }}</div>
       <div class="currency name h-50 w-100 ps-2">{{ currencyName }}</div>
@@ -69,7 +72,14 @@ button:focus {
 </style>
 
 <script lang="ts">
+import { useSendNameStore } from "../stores/sendName";
+
 export default {
+  setup() {
+    const nameStore = useSendNameStore();
+    return { nameStore };
+  },
+
   props: {
     currencyValue: {
       type: Number,
@@ -88,6 +98,12 @@ export default {
   computed: {
     absoluteStock() {
       return Math.abs(parseFloat(this.currencyStock.toFixed(3)));
+    },
+  },
+  methods: {
+    // Przekazanie nazwy do store
+    sendCurrencyName() {
+      this.nameStore.setName(this.currencyName);
     },
   },
 };
