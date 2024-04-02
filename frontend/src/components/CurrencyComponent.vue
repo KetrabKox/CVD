@@ -38,9 +38,11 @@ export default defineComponent({
     };
   },
   async mounted() {
-    var yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
     var today = new Date();
+    var yesterday = new Date();
+
+    // Zmiana daty o wskazaną wartość
+    yesterday.setDate(yesterday.getDate() - 1);
 
     // Zmiana daty z weekendów na dni powszednie
     if (today.getDay() == 6) {
@@ -54,30 +56,30 @@ export default defineComponent({
     }
 
     // Formatowanie daty
-    var dd2 = String(yesterday.getDate()).padStart(2, "0");
-    var mm2 = String(yesterday.getMonth() + 1).padStart(2, "0");
-    var yyyy2 = yesterday.getFullYear();
+    var d_e = String(today.getDate()).padStart(2, "0");
+    var m_e = String(today.getMonth() + 1).padStart(2, "0");
+    var y_e = today.getFullYear();
 
-    var dd = String(today.getDate()).padStart(2, "0");
-    var mm = String(today.getMonth() + 1).padStart(2, "0");
-    var yyyy = today.getFullYear();
+    var d_s = String(yesterday.getDate()).padStart(2, "0");
+    var m_s = String(yesterday.getMonth() + 1).padStart(2, "0");
+    var y_s = yesterday.getFullYear();
 
-    // Pobieranie danych z API NBP
-    let response_today = await axios.get(
+    let response = await axios.get(
       `http://api.nbp.pl/api/exchangerates/tables/A/${
-        yyyy + "-" + mm + "-" + dd
-      }/`
+        y_s + "-" + m_s + "-" + d_s
+      }/${y_e + "-" + m_e + "-" + d_e}`
     );
-    let response_yesterday = await axios.get(
-      `http://api.nbp.pl/api/exchangerates/tables/A/${
-        yyyy2 + "-" + mm2 + "-" + dd2
-      }/`
-    );
+
     // Obliczanie różnicy dla kazdej waluty
-    for (let i = 0; i < response_today.data[0].rates.length; i++) {
-      let currency = response_today.data[0].rates[i].code;
-      let value_today = response_today.data[0].rates[i].mid.toFixed(3);
-      let value_yesterday = response_yesterday.data[0].rates[i].mid;
+    for (
+      let i = 0;
+      i < response.data[response.data.length - 1].rates.length;
+      i++
+    ) {
+      let currency = response.data[response.data.length - 1].rates[i].code;
+      let value_today =
+        response.data[response.data.length - 1].rates[i].mid.toFixed(3);
+      let value_yesterday = response.data[0].rates[i].mid;
       let stock = ((value_today - value_yesterday) / value_today) * 100;
       if (value_today == 0) {
         stock = 0;

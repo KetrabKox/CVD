@@ -57,7 +57,7 @@ export default defineComponent({
         datasets: [
           {
             data: [] as any,
-            backgroundColor: "transparent",
+            backgroundColor: "red",
             borderColor: "#f6b17a",
             pointRadius: 0,
           },
