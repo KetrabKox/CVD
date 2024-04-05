@@ -1,1 +1,108 @@
-<template></template>
+<template>
+  <div class="header-wrap rounded-4 m-3 d-flex justify-content-around">
+    <HeaderComponent :name="'Open'" :value="openValue" />
+    <HeaderComponent :name="'Close'" :value="closeValue" />
+    <div v-if="currentValue < 0">
+      <HeaderComponent
+        :name="'Change'"
+        :value="Math.abs(currentValue)"
+        :percantege="'%'"
+      />
+    </div>
+    <div v-if="currentValue >= 0">
+      <HeaderComponent
+        :name="'Change'"
+        :value="Math.abs(currentValue)"
+        :percantege="'%'"
+      />
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import HeaderComponent from "./HeaderComponent.vue";
+import axios from "axios";
+import { useSendNameStore } from "../stores/sendName";
+
+export default defineComponent({
+  data() {
+    return {
+      openValue: 0,
+      closeValue: 0,
+      currentValue: 0,
+    };
+  },
+  setup() {
+    const nameStore = useSendNameStore();
+    return { nameStore };
+  },
+  components: {
+    HeaderComponent,
+  },
+
+  async mounted() {},
+
+  methods: {
+    async updateValues() {
+      var start = new Date();
+      var end = new Date();
+
+      // Zmiana daty o wskazaną wartość
+      end.setDate(end.getDate() - 7);
+
+      // Zmiana daty z weekendów na dni powszednie
+      if (start.getDay() == 6) {
+        start.setDate(start.getDate() - 1);
+        end.setDate(end.getDate() - 1);
+      } else if (start.getDay() == 0) {
+        start.setDate(start.getDate() - 2);
+        end.setDate(end.getDate() - 2);
+      } else if (start.getDay() == 1) {
+        end.setDate(end.getDate() - 3);
+      }
+
+      // Formatowanie daty
+      var d_e = String(start.getDate()).padStart(2, "0");
+      var m_e = String(start.getMonth() + 1).padStart(2, "0");
+      var y_e = start.getFullYear();
+
+      var d_s = String(end.getDate()).padStart(2, "0");
+      var m_s = String(end.getMonth() + 1).padStart(2, "0");
+      var y_s = end.getFullYear();
+
+      let response = await axios.get(
+        `http://api.nbp.pl/api/exchangerates/tables/A/${
+          y_s + "-" + m_s + "-" + d_s
+        }/${y_e + "-" + m_e + "-" + d_e}`
+      );
+
+      // Przypiswanie wartości do zmiennych w zależności od nameStore.name
+
+      let foundOpen = response.data[0].rates.filter(
+        (element: any) => element.code == this.nameStore.name
+      );
+      let foundClose = response.data[response.data.length - 1].rates.filter(
+        (element: any) => element.code == this.nameStore.name
+      );
+
+      this.openValue = parseFloat(foundOpen[0].mid.toFixed(3));
+      this.closeValue = parseFloat(
+        foundClose[foundClose.length - 1].mid.toFixed(3)
+      );
+      this.currentValue = (
+        ((this.closeValue - this.openValue) / this.openValue) *
+        100
+      ).toFixed(2);
+    },
+  },
+  watch: {
+    nameStore: {
+      handler() {
+        this.updateValues();
+      },
+      deep: true,
+    },
+  },
+});
+</script>

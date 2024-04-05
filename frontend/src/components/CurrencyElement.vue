@@ -11,12 +11,14 @@
       class="currency stock h-100 w-100 rounded-end-4 stock-down"
       v-if="currencyStock < 0"
     >
+      <i class="bi bi-caret-down-fill"></i>
       {{ absoluteStock }}
     </div>
     <div
       class="currency stock h-100 w-100 rounded-end-4 stock-up"
       v-else-if="currencyStock >= 0"
     >
+      <i class="bi bi-caret-up-fill"></i>
       {{ currencyStock.toFixed(3) }}
     </div>
   </button>
