@@ -7,7 +7,7 @@ export const useSendNameStore = defineStore({
   }),
   actions: {
     setName(name: string) {
-      this.name = name;
+      this.$patch({ name });
     },
   },
 });

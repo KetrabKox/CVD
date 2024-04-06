@@ -9,7 +9,7 @@
 
 <style scoped>
 .rounded-4 {
-  width: 13vw;
+  width: 15vw;
   height: 7.5vh;
   background-color: var(--secondary-color-text);
   box-shadow: 0 0.5rem var(--main-theme-color);

@@ -5,14 +5,14 @@
     <div v-if="currentValue < 0">
       <HeaderComponent
         :name="'Change'"
-        :value="Math.abs(currentValue)"
+        :value="currentValue"
         :percantege="'%'"
       />
     </div>
     <div v-if="currentValue >= 0">
       <HeaderComponent
         :name="'Change'"
-        :value="Math.abs(currentValue)"
+        :value="currentValue"
         :percantege="'%'"
       />
     </div>
@@ -41,7 +41,9 @@ export default defineComponent({
     HeaderComponent,
   },
 
-  async mounted() {},
+  async mounted() {
+    this.updateValues();
+  },
 
   methods: {
     async updateValues() {
