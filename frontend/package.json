@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "@vueuse/core": "^10.9.0",
     "axios": "^1.6.7",
     "chart.js": "^4.4.2",
     "pinia": "^2.1.7",

@@ -139,7 +139,7 @@ export default defineComponent({
       this.currencyWeek = response_week.data
         .map((item: any) => {
           let found = item.rates.filter(
-            (element: any) => element.code == this.nameStore.name
+            (element: any) => element.code == this.nameStore.sendName.name
           );
           if (found.length > 0) {
             return {

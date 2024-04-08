@@ -30,7 +30,7 @@ export default defineComponent({
     return {
       openValue: 0,
       closeValue: 0,
-      currentValue: 0,
+      currentValue: 0 as any,
     };
   },
   setup() {
@@ -82,10 +82,10 @@ export default defineComponent({
       // Przypiswanie wartości do zmiennych w zależności od nameStore.name
 
       let foundOpen = response.data[0].rates.filter(
-        (element: any) => element.code == this.nameStore.name
+        (element: any) => element.code == this.nameStore.sendName.name
       );
       let foundClose = response.data[response.data.length - 1].rates.filter(
-        (element: any) => element.code == this.nameStore.name
+        (element: any) => element.code == this.nameStore.sendName.name
       );
 
       this.openValue = parseFloat(foundOpen[0].mid.toFixed(3));

@@ -1,13 +1,15 @@
 import { defineStore } from "pinia";
+import { useLocalStorage } from "@vueuse/core";
 
-export const useSendNameStore = defineStore({
-  id: "sendName",
-  state: () => ({
+export const useSendNameStore = defineStore("sendName", () => {
+  const sendName = useLocalStorage("useName", {
     name: "USD",
-  }),
-  actions: {
+  });
+
+  return {
+    sendName,
     setName(name: string) {
-      this.$patch({ name });
+      sendName.value = { name };
     },
-  },
+  };
 });

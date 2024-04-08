@@ -105,7 +105,7 @@ export default {
   methods: {
     // Przekazanie nazwy do store
     sendCurrencyName() {
-      this.nameStore.$patch({ name: this.currencyName });
+      this.nameStore.setName(this.currencyName);
     },
   },
 };
