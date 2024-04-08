@@ -1,5 +1,13 @@
 <template>
   <HeaderDashboard />
+  <div class="d-flex">
+    <DateRange :dateName="'5D'" />
+    <DateRange :dateName="'1M'" />
+    <DateRange :dateName="'3M'" />
+    <DateRange :dateName="'6M'" />
+    <DateRange :dateName="'1Y'" />
+    <DateRange :dateName="'5Y'" />
+  </div>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
 </template>
 
@@ -7,6 +15,7 @@
 import { defineComponent, watch } from "vue";
 import { Line } from "vue-chartjs";
 import HeaderDashboard from "../components/HeaderDashboard.vue";
+import DateRange from "./DateRangeComponent.vue";
 import { useSendNameStore, useDateStore } from "../stores/store";
 import axios from "axios";
 
@@ -40,6 +49,7 @@ export default defineComponent({
   components: {
     Line,
     HeaderDashboard,
+    DateRange,
   },
 
   async mounted() {
