@@ -23,7 +23,7 @@
 import { defineComponent } from "vue";
 import HeaderComponent from "./HeaderComponent.vue";
 import axios from "axios";
-import { useSendNameStore } from "../stores/sendName";
+import { useSendNameStore, useDateStore } from "../stores/store";
 
 export default defineComponent({
   data() {
@@ -47,22 +47,11 @@ export default defineComponent({
 
   methods: {
     async updateValues() {
-      var start = new Date();
-      var end = new Date();
-
+      const { start, end } = useDateStore().adjustDates(new Date(), new Date());
       // Zmiana daty o wskazaną wartość
       end.setDate(end.getDate() - 7);
 
       // Zmiana daty z weekendów na dni powszednie
-      if (start.getDay() == 6) {
-        start.setDate(start.getDate() - 1);
-        end.setDate(end.getDate() - 1);
-      } else if (start.getDay() == 0) {
-        start.setDate(start.getDate() - 2);
-        end.setDate(end.getDate() - 2);
-      } else if (start.getDay() == 1) {
-        end.setDate(end.getDate() - 3);
-      }
 
       // Formatowanie daty
       var d_e = String(start.getDate()).padStart(2, "0");

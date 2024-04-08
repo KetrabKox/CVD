@@ -74,7 +74,7 @@ button:focus {
 </style>
 
 <script lang="ts">
-import { useSendNameStore } from "../stores/sendName";
+import { useSendNameStore } from "../stores/store";
 
 export default {
   setup() {

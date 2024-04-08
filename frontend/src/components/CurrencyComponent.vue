@@ -25,6 +25,7 @@
 import CurrencyElement from "./CurrencyElement.vue";
 import { defineComponent } from "vue";
 import axios from "axios";
+import { useDateStore } from "../stores/store";
 
 export default defineComponent({
   components: {
@@ -38,31 +39,19 @@ export default defineComponent({
     };
   },
   async mounted() {
-    var today = new Date();
-    var yesterday = new Date();
-
+    const { start, end } = useDateStore().adjustDates(new Date(), new Date());
+    console.log(start, end);
     // Zmiana daty o wskazaną wartość
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    // Zmiana daty z weekendów na dni powszednie
-    if (today.getDay() == 6) {
-      today.setDate(today.getDate() - 1);
-      yesterday.setDate(yesterday.getDate() - 1);
-    } else if (today.getDay() == 0) {
-      today.setDate(today.getDate() - 2);
-      yesterday.setDate(yesterday.getDate() - 2);
-    } else if (today.getDay() == 1) {
-      yesterday.setDate(yesterday.getDate() - 3);
-    }
+    end.setDate(end.getDate() - 1);
 
     // Formatowanie daty
-    var d_e = String(today.getDate()).padStart(2, "0");
-    var m_e = String(today.getMonth() + 1).padStart(2, "0");
-    var y_e = today.getFullYear();
+    var d_e = String(start.getDate()).padStart(2, "0");
+    var m_e = String(start.getMonth() + 1).padStart(2, "0");
+    var y_e = start.getFullYear();
 
-    var d_s = String(yesterday.getDate()).padStart(2, "0");
-    var m_s = String(yesterday.getMonth() + 1).padStart(2, "0");
-    var y_s = yesterday.getFullYear();
+    var d_s = String(end.getDate()).padStart(2, "0");
+    var m_s = String(end.getMonth() + 1).padStart(2, "0");
+    var y_s = end.getFullYear();
 
     let response = await axios.get(
       `http://api.nbp.pl/api/exchangerates/tables/A/${
@@ -79,8 +68,8 @@ export default defineComponent({
       let currency = response.data[response.data.length - 1].rates[i].code;
       let value_today =
         response.data[response.data.length - 1].rates[i].mid.toFixed(3);
-      let value_yesterday = response.data[0].rates[i].mid;
-      let stock = ((value_today - value_yesterday) / value_today) * 100;
+      let value_end = response.data[0].rates[i].mid;
+      let stock = ((value_today - value_end) / value_today) * 100;
       if (value_today == 0) {
         stock = 0;
       }

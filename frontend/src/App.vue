@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import { useSendNameStore } from "../src/stores/sendName";
+import { useSendNameStore } from "../src/stores/store";
 
 useSendNameStore();
 </script>

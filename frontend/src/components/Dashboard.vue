@@ -7,7 +7,7 @@
 import { defineComponent, watch } from "vue";
 import { Line } from "vue-chartjs";
 import HeaderDashboard from "../components/HeaderDashboard.vue";
-import { useSendNameStore } from "../stores/sendName";
+import { useSendNameStore, useDateStore } from "../stores/store";
 import axios from "axios";
 
 import {
@@ -104,31 +104,19 @@ export default defineComponent({
   },
   methods: {
     async updateChartData() {
-      var today = new Date();
-      var last_week = new Date();
+      const { start, end } = useDateStore().adjustDates(new Date(), new Date());
 
       // Zmiana daty o wskazaną wartość
-      last_week.setDate(last_week.getDate() - 7);
-
-      // Zmiana daty z weekendów na dni powszednie
-      if (today.getDay() == 6) {
-        today.setDate(today.getDate() - 1);
-        last_week.setDate(last_week.getDate() - 1);
-      } else if (today.getDay() == 0) {
-        today.setDate(today.getDate() - 2);
-        last_week.setDate(last_week.getDate() - 2);
-      } else if (today.getDay() == 1) {
-        last_week.setDate(last_week.getDate() - 3);
-      }
+      end.setDate(end.getDate() - 7);
 
       // Formatowanie daty
-      var d_e = String(today.getDate()).padStart(2, "0");
-      var m_e = String(today.getMonth() + 1).padStart(2, "0");
-      var y_e = today.getFullYear();
+      var d_e = String(start.getDate()).padStart(2, "0");
+      var m_e = String(start.getMonth() + 1).padStart(2, "0");
+      var y_e = start.getFullYear();
 
-      var d_s = String(last_week.getDate()).padStart(2, "0");
-      var m_s = String(last_week.getMonth() + 1).padStart(2, "0");
-      var y_s = last_week.getFullYear();
+      var d_s = String(end.getDate()).padStart(2, "0");
+      var m_s = String(end.getMonth() + 1).padStart(2, "0");
+      var y_s = end.getFullYear();
 
       let response_week = await axios.get(
         `http://api.nbp.pl/api/exchangerates/tables/A/${
