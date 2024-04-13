@@ -13,7 +13,7 @@
   margin: 1rem 5% 0 auto;
 }
 .dashboard-wrap {
-  height: 75vh;
+  height: 82.5vh;
   width: 65vw;
   background-color: var(--secondary-theme-color);
   padding: 0.5rem;

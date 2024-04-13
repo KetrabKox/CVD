@@ -13,9 +13,9 @@
 </template>
 <style scoped>
 .wrapper {
-  height: 80vh;
+  height: 82.5vh;
   width: 15vw;
-  margin: 3rem 5% 0 auto;
+  margin: 6rem 5% 0 auto;
   background-color: var(--secondary-theme-color);
   padding: 0.5rem 0 1rem 0;
 }
