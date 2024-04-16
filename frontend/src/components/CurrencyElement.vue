@@ -1,5 +1,30 @@
 <template>
   <button
+    v-if="whichClicked === currencyName"
+    class="wrap clicked rounded-4 mt-3 d-flex flex-row p-0"
+    @click="sendCurrencyName"
+  >
+    <div class="h-100 rounded-start-4">
+      <div class="currency value h-50 w-100 ps-2">{{ currencyValue }}</div>
+      <div class="currency name h-50 w-100 ps-2">{{ currencyName }}</div>
+    </div>
+    <div
+      class="currency stock h-100 w-100 rounded-end-4 stock-down"
+      v-if="currencyStock < 0"
+    >
+      <i class="bi bi-caret-down-fill"></i>
+      {{ absoluteStock }} %
+    </div>
+    <div
+      class="currency stock h-100 w-100 rounded-end-4 stock-up"
+      v-else-if="currencyStock >= 0"
+    >
+      <i class="bi bi-caret-up-fill"></i>
+      {{ currencyStock.toFixed(3) }} %
+    </div>
+  </button>
+  <button
+    v-else
     class="wrap rounded-4 mt-3 d-flex flex-row p-0"
     @click="sendCurrencyName"
   >
@@ -42,14 +67,17 @@ button {
   box-shadow: 0 0.5rem var(--main-theme-color);
   transition: 0.3s;
 }
-button:active {
+button:active,
+button.clicked {
   box-shadow: 0 0.3rem var(--main-theme-color);
   transform: translateY(4px);
 }
-button:focus {
+button:focus,
+button.clicked {
   transform: translateY(4px);
   box-shadow: 0 0.3rem var(--main-theme-color);
   background-color: var(--main-color-text);
+  cursor: default;
 }
 .currency.value {
   border-top-left-radius: 15px;
@@ -94,6 +122,10 @@ export default {
     currencyStock: {
       type: Number,
       required: true,
+    },
+    whichClicked: {
+      type: String,
+      required: false,
     },
   },
   // Obliczenie wartości bezwzględnej kursu waluty

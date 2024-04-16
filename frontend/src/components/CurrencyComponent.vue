@@ -23,6 +23,7 @@
       :currencyName="currency.name"
       :currencyStock="currency.stock"
       :currencyValue="currency.value"
+      :whichClicked="nameStore.sendName.name"
     />
   </div>
 </template>
@@ -60,11 +61,15 @@
 import CurrencyElement from "./CurrencyElement.vue";
 import { defineComponent } from "vue";
 import axios from "axios";
-import { useDateStore } from "../stores/store";
+import { useDateStore, useSendNameStore } from "../stores/store";
 
 export default defineComponent({
   components: {
     CurrencyElement,
+  },
+  setup() {
+    const nameStore = useSendNameStore();
+    return { nameStore };
   },
   data() {
     return {
@@ -75,6 +80,7 @@ export default defineComponent({
       originalSort: [] as any[],
       isClickedAsc: false,
       isClickedDesc: false,
+      nameStore: useSendNameStore(),
     };
   },
   computed: {
