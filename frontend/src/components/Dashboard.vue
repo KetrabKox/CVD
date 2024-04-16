@@ -18,6 +18,7 @@ import HeaderDashboard from "../components/HeaderDashboard.vue";
 import DateRange from "./DateRangeComponent.vue";
 import { useSendNameStore, useDateStore } from "../stores/store";
 import axios from "axios";
+import { getChartOptions } from "../assets/chartOptions";
 
 import {
   Chart as ChartJS,
@@ -73,43 +74,7 @@ export default defineComponent({
           },
         ],
       },
-      chartOptions: {
-        responsive: true,
-        scales: {
-          x: {
-            grid: {
-              color: "transparent",
-            },
-            ticks: {
-              color: "gray",
-            },
-          },
-          y: {
-            border: {
-              display: false,
-            },
-            grid: {
-              color: "rgba(0, 0, 0, 0.1)",
-            },
-            ticks: {
-              color: "#ffffff",
-            },
-          },
-        },
-        plugins: {
-          legend: {
-            display: false,
-          },
-          title: {
-            display: true,
-            text: `${this.currentName}/PLN`,
-            color: "#ffffff",
-            font: {
-              size: 20,
-            },
-          },
-        },
-      },
+      chartOptions: getChartOptions(String(this.currentName)),
     };
   },
   methods: {
