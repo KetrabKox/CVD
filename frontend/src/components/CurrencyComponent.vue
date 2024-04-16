@@ -100,6 +100,9 @@ export default defineComponent({
       this.isSorted = false;
       this.originalSort = this.sortedCurrencies;
       localStorage.setItem("isSorted", "false");
+      localStorage.setItem("isClickedAsc", "true");
+      localStorage.setItem("isClickedDesc", "false");
+      localStorage.setItem("originalSort", JSON.stringify(this.originalSort));
     },
     sortDesc() {
       this.isClickedAsc = false;
@@ -107,17 +110,29 @@ export default defineComponent({
       this.isSorted = true;
       this.originalSort = this.sortedCurrencies;
       localStorage.setItem("isSorted", "true");
+      localStorage.setItem("isClickedAsc", "false");
+      localStorage.setItem("isClickedDesc", "true");
+      localStorage.setItem("originalSort", JSON.stringify(this.originalSort));
     },
     resetSort() {
       this.isClickedAsc = false;
       this.isClickedDesc = false;
       this.originalSort = [];
+      localStorage.setItem("isClickedAsc", "false");
+      localStorage.setItem("isClickedDesc", "false");
+      localStorage.setItem("originalSort", JSON.stringify(this.originalSort));
     },
   },
   async mounted() {
     const { start, end } = useDateStore().adjustDates(new Date(), new Date());
 
-    this.isSorted = localStorage.getItem("isSorted") !== "false";
+    this.isSorted = localStorage.getItem("isSorted") === "true";
+    this.isClickedAsc = localStorage.getItem("isClickedAsc") === "true";
+    this.isClickedDesc = localStorage.getItem("isClickedDesc") === "true";
+    this.originalSort = JSON.parse(
+      localStorage.getItem("originalSort") || "[]"
+    );
+
     // Zmiana daty o wskazaną wartość
     end.setDate(end.getDate() - 1);
 
