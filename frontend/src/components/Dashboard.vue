@@ -1,12 +1,10 @@
 <template>
   <HeaderDashboard />
   <div class="d-flex">
-    <DateRange :dateName="'5D'" />
-    <DateRange :dateName="'1M'" />
-    <DateRange :dateName="'3M'" />
-    <DateRange :dateName="'6M'" />
-    <DateRange :dateName="'1Y'" />
-    <DateRange :dateName="'5Y'" />
+    <DateRange :dateValue="5" :dateName="'D'" />
+    <DateRange :dateValue="3" :dateName="'W'" />
+    <DateRange :dateValue="1" :dateName="'M'" />
+    <DateRange :dateValue="3" :dateName="'M'" />
   </div>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
 </template>
@@ -16,7 +14,11 @@ import { defineComponent, watch } from "vue";
 import { Line } from "vue-chartjs";
 import HeaderDashboard from "../components/HeaderDashboard.vue";
 import DateRange from "./DateRangeComponent.vue";
-import { useSendNameStore, useDateStore } from "../stores/store";
+import {
+  useSendNameStore,
+  useDateStore,
+  useDateValueStore,
+} from "../stores/store";
 import axios from "axios";
 import { getChartOptions } from "../assets/chartOptions";
 
@@ -44,7 +46,8 @@ ChartJS.register(
 export default defineComponent({
   setup() {
     const nameStore = useSendNameStore();
-    return { nameStore };
+    const dateStore = useDateValueStore();
+    return { nameStore, dateStore };
   },
 
   components: {
@@ -61,6 +64,7 @@ export default defineComponent({
   data() {
     return {
       nameStore: useSendNameStore(),
+      dateStore: useDateValueStore(),
       currentName: "",
       currencyWeek: [],
       chartData: {
@@ -79,10 +83,22 @@ export default defineComponent({
   },
   methods: {
     async updateChartData() {
+      // Pobranie zakresu dat z localStorage
+      const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
+      const dateName = dateRange.name;
+      const dateValue = dateRange.value;
+
+      // Pobranie aktualnego zakresu dat
       const { start, end } = useDateStore().adjustDates(new Date(), new Date());
 
       // Zmiana daty o wskazaną wartość
-      end.setDate(end.getDate() - 7);
+      if (dateName === "D") {
+        end.setDate(end.getDate() - dateValue);
+      } else if (dateName === "W") {
+        end.setDate(end.getDate() - dateValue * 7);
+      } else if (dateName === "M") {
+        end.setMonth(end.getMonth() - dateValue);
+      }
 
       // Formatowanie daty
       var d_e = String(start.getDate()).padStart(2, "0");
@@ -134,6 +150,12 @@ export default defineComponent({
   // Obserwujemy zmiany w nameStore i aktualizujemy wykres
   watch: {
     nameStore: {
+      handler() {
+        this.updateChartData();
+      },
+      deep: true,
+    },
+    dateStore: {
       handler() {
         this.updateChartData();
       },

@@ -31,3 +31,24 @@ export const useDateStore = defineStore("date", () => {
     },
   };
 });
+
+export const useDateValueStore = defineStore("dateValue", () => {
+  const dateRange = useLocalStorage<{ name: string; value: number }>(
+    "useDate",
+    {
+      value: 7,
+      name: "D",
+    }
+  );
+
+  return {
+    dateRange,
+    // Metody do aktualizacji stanu sklepu
+    setDateValue(value: number) {
+      dateRange.value = { ...dateRange.value, value };
+    },
+    setDateName(name: string) {
+      dateRange.value = { ...dateRange.value, name };
+    },
+  };
+});

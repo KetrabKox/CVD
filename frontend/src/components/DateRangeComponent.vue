@@ -1,8 +1,9 @@
 <template>
   <button
     class="my-2 me-2 text-center d-inline-block position-relative border-0 text-decoration-none"
+    @click="saveDateRange"
   >
-    {{ dateName }}
+    {{ dateValue }}{{ dateName }}
   </button>
 </template>
 
@@ -41,14 +42,26 @@ button:focus::after {
 </style>
 
 <script lang="ts">
+import { useDateValueStore } from "../stores/store";
 export default {
   setup() {
     return {};
   },
   props: {
+    dateValue: {
+      type: Number,
+      required: true,
+    },
     dateName: {
       type: String,
       required: true,
+    },
+  },
+  methods: {
+    saveDateRange() {
+      const dateValueStore = useDateValueStore();
+      dateValueStore.dateRange.value = this.dateValue;
+      dateValueStore.dateRange.name = this.dateName;
     },
   },
 };
