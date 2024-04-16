@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper d-flex align-items-center flex-row">
+  <div class="wrapped d-flex align-items-center flex-row">
     <div class="profil-page rounded-circle"></div>
     <div class="header">
       <router-link to="/">
