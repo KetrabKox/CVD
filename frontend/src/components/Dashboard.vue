@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from "vue";
+import { defineComponent } from "vue";
 import { Line } from "vue-chartjs";
 import HeaderDashboard from "../components/HeaderDashboard.vue";
 import DateRange from "./DateRangeComponent.vue";

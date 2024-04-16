@@ -23,7 +23,11 @@
 import { defineComponent } from "vue";
 import HeaderComponent from "./HeaderComponent.vue";
 import axios from "axios";
-import { useSendNameStore, useDateStore } from "../stores/store";
+import {
+  useSendNameStore,
+  useDateStore,
+  useDateValueStore,
+} from "../stores/store";
 
 export default defineComponent({
   data() {
@@ -35,7 +39,8 @@ export default defineComponent({
   },
   setup() {
     const nameStore = useSendNameStore();
-    return { nameStore };
+    const dateStore = useDateValueStore();
+    return { nameStore, dateStore };
   },
   components: {
     HeaderComponent,
@@ -47,9 +52,19 @@ export default defineComponent({
 
   methods: {
     async updateValues() {
+      const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
+      const dateName = dateRange.name;
+      const dateValue = dateRange.value;
+
       const { start, end } = useDateStore().adjustDates(new Date(), new Date());
       // Zmiana daty o wskazaną wartość
-      end.setDate(end.getDate() - 7);
+      if (dateName === "D") {
+        end.setDate(end.getDate() - dateValue);
+      } else if (dateName === "W") {
+        end.setDate(end.getDate() - dateValue * 7);
+      } else if (dateName === "M") {
+        end.setMonth(end.getMonth() - dateValue);
+      }
 
       // Zmiana daty z weekendów na dni powszednie
 
@@ -89,6 +104,12 @@ export default defineComponent({
   },
   watch: {
     nameStore: {
+      handler() {
+        this.updateValues();
+      },
+      deep: true,
+    },
+    dateStore: {
       handler() {
         this.updateValues();
       },
