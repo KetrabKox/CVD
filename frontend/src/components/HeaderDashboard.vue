@@ -37,11 +37,13 @@ export default defineComponent({
       currentValue: 0 as any,
     };
   },
+
   setup() {
     const nameStore = useSendNameStore();
     const dateStore = useDateValueStore();
     return { nameStore, dateStore };
   },
+
   components: {
     HeaderComponent,
   },
@@ -52,21 +54,15 @@ export default defineComponent({
 
   methods: {
     async updateValues() {
+      // Pobranie zakresu dat z localStorage
       const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
       const dateName = dateRange.name;
       const dateValue = dateRange.value;
+      console.log(dateName, dateValue);
 
-      const { start, end } = useDateStore().adjustDates(new Date(), new Date());
+      let { start, end } = useDateStore().adjustDates(new Date(), new Date());
       // Zmiana daty o wskazaną wartość
-      if (dateName === "D") {
-        end.setDate(end.getDate() - dateValue);
-      } else if (dateName === "W") {
-        end.setDate(end.getDate() - dateValue * 7);
-      } else if (dateName === "M") {
-        end.setMonth(end.getMonth() - dateValue);
-      }
-
-      // Zmiana daty z weekendów na dni powszednie
+      end = useDateValueStore().adjustDates(dateName, dateValue, end).end;
 
       // Formatowanie daty
       var d_e = String(start.getDate()).padStart(2, "0");

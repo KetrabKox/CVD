@@ -44,27 +44,8 @@ ChartJS.register(
 );
 
 export default defineComponent({
-  setup() {
-    const nameStore = useSendNameStore();
-    const dateStore = useDateValueStore();
-    return { nameStore, dateStore };
-  },
-
-  components: {
-    Line,
-    HeaderDashboard,
-    DateRange,
-  },
-
-  async mounted() {
-    // Pobranie danych z NBP API
-    this.updateChartData(); // Wywołujemy metodę updateChartData
-  },
-
   data() {
     return {
-      nameStore: useSendNameStore(),
-      dateStore: useDateValueStore(),
       currentName: "",
       currencyWeek: [],
       chartData: {
@@ -72,7 +53,7 @@ export default defineComponent({
         datasets: [
           {
             data: [] as any,
-            backgroundColor: "red",
+            backgroundColor: "orange",
             borderColor: "#f6b17a",
             pointRadius: 0,
           },
@@ -81,24 +62,34 @@ export default defineComponent({
       chartOptions: getChartOptions(String(this.currentName)),
     };
   },
+
+  components: {
+    Line,
+    HeaderDashboard,
+    DateRange,
+  },
+
+  setup() {
+    const nameStore = useSendNameStore();
+    const dateStore = useDateValueStore();
+    return { nameStore, dateStore };
+  },
+
+  async mounted() {
+    this.updateChartData();
+  },
+
   methods: {
     async updateChartData() {
       // Pobranie zakresu dat z localStorage
       const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
       const dateName = dateRange.name;
       const dateValue = dateRange.value;
+      console.log(dateName, dateValue);
 
-      // Pobranie aktualnego zakresu dat
-      const { start, end } = useDateStore().adjustDates(new Date(), new Date());
-
+      let { start, end } = useDateStore().adjustDates(new Date(), new Date());
       // Zmiana daty o wskazaną wartość
-      if (dateName === "D") {
-        end.setDate(end.getDate() - dateValue);
-      } else if (dateName === "W") {
-        end.setDate(end.getDate() - dateValue * 7);
-      } else if (dateName === "M") {
-        end.setMonth(end.getMonth() - dateValue);
-      }
+      end = useDateValueStore().adjustDates(dateName, dateValue, end).end;
 
       // Formatowanie daty
       var d_e = String(start.getDate()).padStart(2, "0");

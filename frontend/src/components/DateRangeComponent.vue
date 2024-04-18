@@ -44,9 +44,6 @@ button:focus::after {
 <script lang="ts">
 import { useDateValueStore } from "../stores/store";
 export default {
-  setup() {
-    return {};
-  },
   props: {
     dateValue: {
       type: Number,
