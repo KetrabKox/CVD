@@ -21,6 +21,7 @@ import {
 } from "../stores/store";
 import axios from "axios";
 import { getChartOptions } from "../assets/chartOptions";
+import { watch } from "vue";
 
 import {
   Chart as ChartJS,
@@ -72,6 +73,14 @@ export default defineComponent({
   setup() {
     const nameStore = useSendNameStore();
     const dateStore = useDateValueStore();
+
+    watch(dateStore, (newValue) => {
+      localStorage.setItem(
+        "useDate",
+        JSON.stringify({ name: dateStore.dateRange, value: newValue })
+      );
+    });
+
     return { nameStore, dateStore };
   },
 
@@ -82,7 +91,7 @@ export default defineComponent({
   methods: {
     async updateChartData() {
       // Pobranie zakresu dat z localStorage
-      const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
+      const dateRange = this.dateStore.dateRange;
       const dateName = dateRange.name;
       const dateValue = dateRange.value;
       console.log(dateName, dateValue);
