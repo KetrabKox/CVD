@@ -1,5 +1,13 @@
 <template>
   <button
+    v-if="isActive"
+    class="my-2 me-2 text-center d-inline-block position-relative border-0 text-decoration-none active"
+    @click="saveDateRange"
+  >
+    {{ dateValue }}{{ dateName }}
+  </button>
+  <button
+    v-else
     class="my-2 me-2 text-center d-inline-block position-relative border-0 text-decoration-none"
     @click="saveDateRange"
   >
@@ -21,7 +29,8 @@ button:hover {
   background-color: var(--secondary-color-text);
 }
 
-button::after {
+button::after,
+.active::after {
   content: "";
   position: absolute;
   width: 50%;
@@ -35,8 +44,14 @@ button::after {
   border-radius: 0 0 5px 5px;
 }
 
+.active::after {
+  transform: scaleX(1);
+}
+
 button:active::after,
-button:focus::after {
+button:focus::after,
+.active:active::after,
+.active:focus::after {
   transform: scaleX(1);
 }
 </style>
@@ -51,6 +66,10 @@ export default {
     },
     dateName: {
       type: String,
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
       required: true,
     },
   },

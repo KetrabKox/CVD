@@ -1,10 +1,10 @@
 <template>
   <HeaderDashboard />
   <div class="d-flex">
-    <DateRange :dateValue="5" :dateName="'D'" />
-    <DateRange :dateValue="3" :dateName="'W'" />
-    <DateRange :dateValue="1" :dateName="'M'" />
-    <DateRange :dateValue="3" :dateName="'M'" />
+    <DateRange :dateValue="5" :dateName="'D'" :isActive="isActive(5, 'D')" />
+    <DateRange :dateValue="3" :dateName="'W'" :isActive="isActive(3, 'W')" />
+    <DateRange :dateValue="1" :dateName="'M'" :isActive="isActive(1, 'M')" />
+    <DateRange :dateValue="3" :dateName="'M'" :isActive="isActive(3, 'M')" />
   </div>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
 </template>
@@ -145,6 +145,10 @@ export default defineComponent({
         this.chartOptions.plugins.title.text =
           (this.currencyWeek[0] as any).name + "/PLN";
       }
+    },
+    isActive(dateValue: any, dateName: any) {
+      const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
+      return dateRange.value === dateValue && dateRange.name === dateName;
     },
   },
   // Obserwujemy zmiany w nameStore i aktualizujemy wykres
