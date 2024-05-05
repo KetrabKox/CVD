@@ -31,7 +31,7 @@
 .wrapper {
   height: 82.5vh;
   width: 15vw;
-  margin: 6rem 5% 0 auto;
+  margin: 4rem 5% 0 auto;
   background-color: var(--secondary-theme-color);
   padding: 0.5rem 0 1rem 0;
 }
