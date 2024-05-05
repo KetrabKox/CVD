@@ -1,23 +1,27 @@
 <template>
   <HeaderDashboard />
   <div class="d-flex">
-    <DateRange :dateName="'5D'" />
-    <DateRange :dateName="'1M'" />
-    <DateRange :dateName="'3M'" />
-    <DateRange :dateName="'6M'" />
-    <DateRange :dateName="'1Y'" />
-    <DateRange :dateName="'5Y'" />
+    <DateRange :dateValue="5" :dateName="'D'" :isActive="isActive(5, 'D')" />
+    <DateRange :dateValue="3" :dateName="'W'" :isActive="isActive(3, 'W')" />
+    <DateRange :dateValue="1" :dateName="'M'" :isActive="isActive(1, 'M')" />
+    <DateRange :dateValue="3" :dateName="'M'" :isActive="isActive(3, 'M')" />
   </div>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from "vue";
+import { defineComponent } from "vue";
 import { Line } from "vue-chartjs";
 import HeaderDashboard from "../components/HeaderDashboard.vue";
 import DateRange from "./DateRangeComponent.vue";
-import { useSendNameStore, useDateStore } from "../stores/store";
+import {
+  useSendNameStore,
+  useDateStore,
+  useDateValueStore,
+} from "../stores/store";
 import axios from "axios";
+import { getChartOptions } from "../assets/chartOptions";
+import { watch } from "vue";
 
 import {
   Chart as ChartJS,
@@ -41,9 +45,23 @@ ChartJS.register(
 );
 
 export default defineComponent({
-  setup() {
-    const nameStore = useSendNameStore();
-    return { nameStore };
+  data() {
+    return {
+      currentName: "",
+      currencyWeek: [],
+      chartData: {
+        labels: [] as any,
+        datasets: [
+          {
+            data: [] as any,
+            backgroundColor: "orange",
+            borderColor: "#f6b17a",
+            pointRadius: 0,
+          },
+        ],
+      },
+      chartOptions: getChartOptions(String(this.currentName)),
+    };
   },
 
   components: {
@@ -52,72 +70,35 @@ export default defineComponent({
     DateRange,
   },
 
-  async mounted() {
-    // Pobranie danych z NBP API
-    this.updateChartData(); // Wywołujemy metodę updateChartData
+  setup() {
+    const nameStore = useSendNameStore();
+    const dateStore = useDateValueStore();
+
+    watch(dateStore, (newValue) => {
+      localStorage.setItem(
+        "useDate",
+        JSON.stringify({ name: dateStore.dateRange, value: newValue })
+      );
+    });
+
+    return { nameStore, dateStore };
   },
 
-  data() {
-    return {
-      nameStore: useSendNameStore(),
-      currentName: "",
-      currencyWeek: [],
-      chartData: {
-        labels: [] as any,
-        datasets: [
-          {
-            data: [] as any,
-            backgroundColor: "red",
-            borderColor: "#f6b17a",
-            pointRadius: 0,
-          },
-        ],
-      },
-      chartOptions: {
-        responsive: true,
-        scales: {
-          x: {
-            grid: {
-              color: "transparent",
-            },
-            ticks: {
-              color: "gray",
-            },
-          },
-          y: {
-            border: {
-              display: false,
-            },
-            grid: {
-              color: "rgba(0, 0, 0, 0.1)",
-            },
-            ticks: {
-              color: "#ffffff",
-            },
-          },
-        },
-        plugins: {
-          legend: {
-            display: false,
-          },
-          title: {
-            display: true,
-            text: `${this.currentName}/PLN`,
-            color: "#ffffff",
-            font: {
-              size: 20,
-            },
-          },
-        },
-      },
-    };
+  async mounted() {
+    this.updateChartData();
   },
+
   methods: {
     async updateChartData() {
-      const { start, end } = useDateStore().adjustDates(new Date(), new Date());
+      // Pobranie zakresu dat z localStorage
+      const dateRange = this.dateStore.dateRange;
+      const dateName = dateRange.name;
+      const dateValue = dateRange.value;
+      console.log(dateName, dateValue);
 
+      let { start, end } = useDateStore().adjustDates(new Date(), new Date());
       // Zmiana daty o wskazaną wartość
-      end.setDate(end.getDate() - 7);
+      end = useDateValueStore().adjustDates(dateName, dateValue, end).end;
 
       // Formatowanie daty
       var d_e = String(start.getDate()).padStart(2, "0");
@@ -165,10 +146,20 @@ export default defineComponent({
           (this.currencyWeek[0] as any).name + "/PLN";
       }
     },
+    isActive(dateValue: any, dateName: any) {
+      const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
+      return dateRange.value === dateValue && dateRange.name === dateName;
+    },
   },
   // Obserwujemy zmiany w nameStore i aktualizujemy wykres
   watch: {
     nameStore: {
+      handler() {
+        this.updateChartData();
+      },
+      deep: true,
+    },
+    dateStore: {
       handler() {
         this.updateChartData();
       },

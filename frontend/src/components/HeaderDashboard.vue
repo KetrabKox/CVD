@@ -23,7 +23,11 @@
 import { defineComponent } from "vue";
 import HeaderComponent from "./HeaderComponent.vue";
 import axios from "axios";
-import { useSendNameStore, useDateStore } from "../stores/store";
+import {
+  useSendNameStore,
+  useDateStore,
+  useDateValueStore,
+} from "../stores/store";
 
 export default defineComponent({
   data() {
@@ -33,10 +37,13 @@ export default defineComponent({
       currentValue: 0 as any,
     };
   },
+
   setup() {
     const nameStore = useSendNameStore();
-    return { nameStore };
+    const dateStore = useDateValueStore();
+    return { nameStore, dateStore };
   },
+
   components: {
     HeaderComponent,
   },
@@ -47,11 +54,15 @@ export default defineComponent({
 
   methods: {
     async updateValues() {
-      const { start, end } = useDateStore().adjustDates(new Date(), new Date());
-      // Zmiana daty o wskazaną wartość
-      end.setDate(end.getDate() - 7);
+      // Pobranie zakresu dat z localStorage
+      const dateRange = JSON.parse(localStorage.getItem("useDate") || "{}");
+      const dateName = dateRange.name;
+      const dateValue = dateRange.value;
+      console.log(dateName, dateValue);
 
-      // Zmiana daty z weekendów na dni powszednie
+      let { start, end } = useDateStore().adjustDates(new Date(), new Date());
+      // Zmiana daty o wskazaną wartość
+      end = useDateValueStore().adjustDates(dateName, dateValue, end).end;
 
       // Formatowanie daty
       var d_e = String(start.getDate()).padStart(2, "0");
@@ -89,6 +100,12 @@ export default defineComponent({
   },
   watch: {
     nameStore: {
+      handler() {
+        this.updateValues();
+      },
+      deep: true,
+    },
+    dateStore: {
       handler() {
         this.updateValues();
       },

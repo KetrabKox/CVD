@@ -31,3 +31,37 @@ export const useDateStore = defineStore("date", () => {
     },
   };
 });
+
+export const useDateValueStore = defineStore("dateValue", () => {
+  const dateRange = useLocalStorage<{ value: number; name: string }>(
+    "useDate",
+    {
+      value: 7,
+      name: "D",
+    }
+  );
+
+  return {
+    dateRange,
+    // Metody do aktualizacji stanu sklepu
+    setDateValue(value: number) {
+      dateRange.value.value = value;
+    },
+    setDateName(name: string) {
+      dateRange.value.name = name;
+    },
+
+    adjustDates(name: string, value: number, end: Date) {
+      if (name === "D") {
+        end.setDate(end.getDate() - value);
+      } else if (name === "W") {
+        end.setDate(end.getDate() - value * 7);
+      } else if (name === "M") {
+        end.setMonth(end.getMonth() - value);
+      } else if (name === "Y") {
+        end.setFullYear(end.getFullYear() - value);
+      }
+      return { end };
+    },
+  };
+});
